@@ -1,8 +1,25 @@
+import _ from 'lodash';
 import React, {Component, PropTypes} from 'react';
 import {reduxForm} from 'redux-form';
 import {createPost} from '../actions/';
 import {Link} from 'react-router';
 import FormInput from './form_input';
+
+const FIELDS = {
+	title: {
+		type: 'input',
+		label: 'Title'
+	},
+	categories: {
+		type: 'input',
+		label: 'Categories'
+	},
+	content: {
+		type: 'textarea',
+		label: 'Content'
+	}
+}
+
 
 class PostsNew extends Component {
 	static contextTypes = {
@@ -25,9 +42,10 @@ class PostsNew extends Component {
 		return (
 			<form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
 				<h3>Create a New Post</h3>
-				<FormInput input={title} name="Title" />
-				<FormInput input={categories} name="Categories" />
-				<FormInput input={content} name="Content" type="textarea" />
+
+				{_.map(FIELDS, (data, field) => {
+					return <FormInput key={field} input={this.props.fields[field]} name={data.label} type={data.type} />
+				})}
 
 				<button type="submit" className="btn btn-primary">Submit</button>
 				<Link to="/" className="btn btn-danger">Cancel</Link>
@@ -39,15 +57,11 @@ class PostsNew extends Component {
 function validate(values) {
 	const errors = {};
 
-	if (!values.title) {
-		errors.title = 'Enter a title';
-	}
-	if (!values.categories) {
-		errors.categories = 'Enter some categories';
-	}
-	if (!values.content) {
-		errors.content = 'Enter some content';
-	}
+	_.each(FIELDS, (type, field) => {
+		if (!values[field]) {
+			errors[field] = `Enter some ${field}`;
+		}
+	});
 
 	return errors;
 }
@@ -56,10 +70,6 @@ function validate(values) {
 // reduxForm: 1st form config, 2nd mapStateToProps, 3rd mapDispatchToProps
 export default reduxForm({
 	form: 'PostsNew',
-	fields: [
-		'title',
-		'categories',
-		'content'
-	],
+	fields: _.keys(FIELDS), // ['title', 'categories', 'content']
 	validate
 }, null, {createPost})(PostsNew);
