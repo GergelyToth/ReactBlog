@@ -28,7 +28,8 @@ class PostsShow extends Component {
 
 		return (
 			<div>
-				<Link to="/">Back to Index</Link>
+				<Link to="/">Back to Index</Link><br />
+				<Link to={`/posts/edit/${this.props.params.id}`}>Edit</Link>
 				<button
 					className="btn btn-danger pull-xs-right"
 					onClick={this.onDeleteClick.bind(this)}
